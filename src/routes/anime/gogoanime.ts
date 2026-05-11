@@ -6,7 +6,7 @@ import { redis } from '../../main';
 import { Redis } from 'ioredis';
 
 const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
-  const gogoanime = new ANIME.Gogoanime(process.env.GOGOANIME_URL);
+  const gogoanime = new ANIME.Gogoanime();
   const redisCacheTime = 60 * 60;
   const redisPrefix = 'gogoanime:';
 
@@ -93,24 +93,10 @@ const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
   });
 
   fastify.get('/genre/list', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      
-      const res = redis ? await cache.fetch(
-        redis as Redis,
-        `${redisPrefix}genre-list`,
-        async () => await gogoanime
-        .fetchGenreList()
-        .catch((err) => reply.status(404).send({ message: err })),
-        redisCacheTime * 24,
-      ) : await gogoanime
-      .fetchGenreList()
-      .catch((err) => reply.status(404).send({ message: err }));
-      reply.status(200).send(res);
-    } catch {
-      reply
-        .status(500)
-        .send({ message: 'Something went wrong. Please try again later.' });
-    }
+    reply.status(501).send({
+      message:
+        'Genre list is not supported by the installed @consumet/extensions version.',
+    });
   });
 
   fastify.get(
@@ -196,9 +182,9 @@ const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
       const res = redis ? await cache.fetch(
         redis as Redis,
         `${redisPrefix}movies;${page}`,
-        async () => await gogoanime.fetchRecentMovies(page),
+        async () => await gogoanime.fetchRecentEpisodes(page, 1),
         redisCacheTime,
-      ) : await gogoanime.fetchRecentMovies(page);
+      ) : await gogoanime.fetchRecentEpisodes(page, 1);
 
       reply.status(200).send(res);
     } catch (err) {
@@ -215,9 +201,9 @@ const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
       const res = redis ? await cache.fetch(
         redis as Redis,
         `${redisPrefix}popular;${page}`,
-        async () => await gogoanime.fetchPopular(page),
+        async () => await gogoanime.fetchTopAiring(page),
         redisCacheTime,
-      ) : await gogoanime.fetchPopular(page);
+      ) : await gogoanime.fetchTopAiring(page);
 
       reply.status(200).send(res);
     } catch (err) {
@@ -252,47 +238,18 @@ const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
   fastify.get(
     '/anime-list',
     async (request: FastifyRequest, reply: FastifyReply) => {
-      try {
-        const page = (request.query as { page: number }).page ?? 1;
-
-        const res = redis ? await cache.fetch(
-          redis as Redis,
-          `gogoanime:anime-list;${page}`,
-          async () => await gogoanime.fetchAnimeList(page),
-          redisCacheTime,
-        ) : await gogoanime.fetchAnimeList(page);
-
-        reply.status(200).send(res);
-      } catch (err) {
-        reply
-          .status(500)
-          .send({ message: 'Something went wrong. Contact developers for help.' });
-      }
+      reply.status(501).send({
+        message:
+          'Anime list is not supported by the installed @consumet/extensions version.',
+      });
     },
   );
 
   fastify.get('/download', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const downloadLink = (request.query as { link: string }).link;
-      if(!downloadLink){
-        reply.status(400).send('Invalid link');
-      }
-      const res = redis ? await cache.fetch(
-        redis as Redis,
-        `${redisPrefix}download-${downloadLink}`,
-        async () => await gogoanime
-        .fetchDirectDownloadLink(downloadLink)
-        .catch((err) => reply.status(404).send({ message: err })),
-        redisCacheTime * 24,
-      ) : await gogoanime
-      .fetchDirectDownloadLink(downloadLink, process.env.RECAPTCHATOKEN ?? '')
-      .catch((err) => reply.status(404).send({ message: err }));
-      reply.status(200).send(res);
-    } catch {
-      reply
-        .status(500)
-        .send({ message: 'Something went wrong. Please try again later.' });
-    }
+    reply.status(501).send({
+      message:
+        'Direct download is not supported by the installed @consumet/extensions version.',
+    });
   });
 };
 
