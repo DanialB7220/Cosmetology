@@ -34,6 +34,18 @@
   "exclude": [
     "node_modules",
     "<node_internals>/**",
-    "bin/**"
+    "bin/**",
+    "src/routes/anime/anify.ts",
+    "src/routes/anime/animekai.ts",
+    "src/routes/anime/anix.ts",
+    "src/routes/anime/zoro.ts",
+    "src/routes/manga/mangakakalot.ts",
+    "src/routes/meta/tmdb.ts",
+    "src/routes/movies/dramacool.ts",
+    "src/routes/movies/flixhq.ts",
+    "src/routes/movies/goku.ts",
+    "src/routes/movies/movieshd.ts",
+    "src/routes/movies/multimovies.ts",
+    "src/routes/movies/sflix.ts"
   ]
 }
