@@ -7,13 +7,15 @@ import { Redis } from 'ioredis';
 
 const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
   const gogoanime = new ANIME.Gogoanime();
+  // Override baseUrl to a working domain (provider defaults can drift over time).
+  (gogoanime as any).baseUrl = process.env.GOGOANIME_URL || 'https://gogoanime.by';
   const redisCacheTime = 60 * 60;
   const redisPrefix = 'gogoanime:';
 
   fastify.get('/', (_, rp) => {
     rp.status(200).send({
       intro:
-        "Welcome to the gogoanime provider: check out the provider's website @ https://www1.gogoanime.bid/",
+        "Welcome to the gogoanime provider: check out the provider's website @ https://gogoanime.by/",
       routes: [
         '/:query',
         '/info/:id',
