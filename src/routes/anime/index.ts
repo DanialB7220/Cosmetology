@@ -1,12 +1,12 @@
 import { FastifyInstance, RegisterOptions } from 'fastify';
 
-import gogoanime from './gogoanime';
+import nineanime from './9anime';
 
 const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
-  await fastify.register(gogoanime, { prefix: '/gogoanime' });
+  await fastify.register(nineanime, { prefix: '/9anime' });
 
   fastify.get('/', async (_request, reply) => {
-    reply.status(200).send('Welcome to Consumet Anime 🗾 (gogoanime only)');
+    reply.status(200).send('Welcome to Consumet Anime 🗾 (9anime only)');
   });
 };
 

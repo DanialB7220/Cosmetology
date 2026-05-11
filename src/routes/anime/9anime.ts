@@ -3,18 +3,26 @@ import { ANIME } from '@consumet/extensions';
 import { StreamingServers } from '@consumet/extensions/dist/models';
 
 const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
+  const proxyUrl = process.env.NINE_ANIME_PROXY;
   const nineanime = new ANIME.NineAnime(
     process.env.NINE_ANIME_HELPER_URL,
-    {
-      url: process.env.NINE_ANIME_PROXY as string,
-    },
-    process.env?.NINE_ANIME_HELPER_KEY as string,
+    proxyUrl ? { url: proxyUrl, key: process.env.NINE_ANIME_PROXY_KEY } : undefined,
+    process.env.NINE_ANIME_HELPER_KEY,
   );
+
+  // Default mirror (Consumet hard-codes 9anime.pl). Point HTTP client at your working host.
+  const baseUrl = process.env.NINE_ANIME_BASE_URL || 'https://9animetv.be';
+  const nine = nineanime as unknown as {
+    baseUrl: string;
+    client: { defaults: { baseURL: string } };
+  };
+  nine.baseUrl = baseUrl;
+  nine.client.defaults.baseURL = baseUrl;
 
   fastify.get('/', (_, rp) => {
     rp.status(200).send({
       intro:
-        "Welcome to the 9anime provider: check out the provider's website @ https://9anime.id/",
+        `Welcome to the 9anime provider: site mirror @ ${baseUrl} (set NINE_ANIME_BASE_URL to override).`,
       routes: ['/:query', '/info/:id', '/watch/:episodeId'],
       documentation: 'https://docs.consumet.org/#tag/9anime',
     });

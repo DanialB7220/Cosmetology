@@ -119,10 +119,6 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
   console.log(chalk.green(`Starting server on port ${PORT}... 🚀`));
   if (!process.env.REDIS_HOST)
     console.warn(chalk.yellowBright('Redis not found. Cache disabled.'));
-  if (!process.env.TMDB_KEY)
-    console.warn(
-      chalk.yellowBright('TMDB api key not found. the TMDB meta route may not work.'),
-    );
 
   await fastify.register(anime, { prefix: '/anime' });
   await fastify.register(Utils, { prefix: '/utils' });
